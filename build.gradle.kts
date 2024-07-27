@@ -4,6 +4,8 @@ val logback_version: String by project
 val koin_version: String by project
 val koin_ktor: String by project
 val kmongo_version: String by project
+val ktor_version: String by project
+
 
 plugins {
     kotlin("jvm") version "2.0.0"
@@ -45,6 +47,19 @@ dependencies {
     implementation("org.litote.kmongo:kmongo:$kmongo_version")
     // Kmongo Coroutine
     implementation("org.litote.kmongo:kmongo-coroutine:$kmongo_version")
+
+    // TEST DEPENDENCIES
+
+    // Ktor Test
+  //  testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+    testImplementation("io.ktor:ktor-server-test-host:$ktor_version")
+    //Koin Test
+    testImplementation("io.insert-koin:koin-test:$koin_version")
+    // Kotlin Test
+    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
+
+    // Truth
+    testImplementation("com.google.truth:truth:1.1.3")
 
     // Koin core features
     implementation(platform("io.insert-koin:koin-bom:$koin_version"))
