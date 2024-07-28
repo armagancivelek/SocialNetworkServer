@@ -26,6 +26,7 @@ fun Route.createUserRoute(
                 val userExist = userRepository.getUserByEmail(request.email) != null
 
                 if (userExist) {
+                    println("User exist ")
                     call.respond(
                         BasicApiResponse(
                             false,
@@ -68,5 +69,6 @@ fun Route.createUserRoute(
                 return@post
             }
         }
+        print("Finished")
     }
 }
