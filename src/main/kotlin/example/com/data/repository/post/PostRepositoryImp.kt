@@ -1,4 +1,4 @@
-package example.com.repository.post
+package example.com.data.repository.post
 
 import example.com.data.models.Following
 import example.com.data.models.Post

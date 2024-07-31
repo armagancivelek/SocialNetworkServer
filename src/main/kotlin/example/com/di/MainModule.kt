@@ -1,11 +1,14 @@
 package example.com.di
 
-import example.com.repository.follow.FollowRepository
-import example.com.repository.follow.FollowRepositoryImpl
-import example.com.repository.post.PostRepository
-import example.com.repository.post.PostRepositoryImp
-import example.com.repository.user.UserRepository
-import example.com.repository.user.UserRepositoryImp
+import example.com.data.repository.follow.FollowRepository
+import example.com.data.repository.follow.FollowRepositoryImpl
+import example.com.data.repository.post.PostRepository
+import example.com.data.repository.post.PostRepositoryImp
+import example.com.data.repository.user.UserRepository
+import example.com.data.repository.user.UserRepositoryImp
+import example.com.service.FollowService
+import example.com.service.PostService
+import example.com.service.UserService
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.coroutine.coroutine
@@ -32,4 +35,16 @@ val mainModule  = module {
     single<PostRepository>{
         PostRepositoryImp(get())
     }
+
+    single{
+        UserService(get())
+    }
+
+    single{
+        PostService(get())
+    }
+    single{
+        FollowService(get())
+    }
+
 }

@@ -1,4 +1,4 @@
-package example.com.repository.follow
+package example.com.data.repository.follow
 
 import example.com.data.models.Following
 import example.com.data.models.User

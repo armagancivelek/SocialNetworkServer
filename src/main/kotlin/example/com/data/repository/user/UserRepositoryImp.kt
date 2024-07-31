@@ -1,4 +1,4 @@
-package example.com.repository.user
+package example.com.data.repository.user
 
 import example.com.data.models.User
 import org.litote.kmongo.coroutine.CoroutineDatabase
@@ -29,4 +29,7 @@ class UserRepositoryImp(
         val user = getUserByEmail(email)
         return user?.password == enteredPassword
     }
+
+    override suspend fun doesEmailBelongToUserId(email: String, userId: String) = users.findOneById(userId)?.email == email
+
 }
