@@ -12,7 +12,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.followUser(
-   followService: FollowService
+    followService: FollowService
 ) {
     post("/api/following/follow") {
         val request = call.receiveNullable<FollowUpdateRequest>() ?: kotlin.run {
@@ -38,7 +38,7 @@ fun Route.followUser(
     }
 }
 
-fun Route.  unfollowUser(followService: FollowService) {
+fun Route.unfollowUser(followService: FollowService) {
     delete("/api/following/unfollow") {
         val request = call.receiveNullable<FollowUpdateRequest>() ?: kotlin.run {
             call.respond(HttpStatusCode.BadRequest)
