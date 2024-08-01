@@ -2,6 +2,7 @@ package example.com.plugins
 
 import example.com.routes.*
 import example.com.service.FollowService
+import example.com.service.LikeService
 import example.com.service.PostService
 import example.com.service.UserService
 import io.ktor.server.application.*
@@ -12,6 +13,7 @@ fun Application.configureRouting() {
     val userService: UserService by inject()
     val postService: PostService by inject()
     val followService: FollowService by inject()
+    val likeService: LikeService by inject()
 
     val jwtIssuer = environment.config.property("jwt.domain").getString()
     val jwtAudience = environment.config.property("jwt.audience").getString()
@@ -33,5 +35,11 @@ fun Application.configureRouting() {
         // post routes
         createPostRoutes(postService,userService)
         getPostsForFollows(postService,userService)
+        deletePost(postService,userService,likeService)
+
+        // like routes
+        likeParent(likeService,userService)
+        unlikeParent(likeService,userService)
+
     }
 }

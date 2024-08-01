@@ -6,19 +6,20 @@ import example.com.data.request.LoginRequest
 import example.com.data.repository.user.UserRepository
 
 class UserService(
-    private val repository : UserRepository
+    private val repository: UserRepository
 ) {
-
-    suspend fun doesUserWithEmailExist( email : String) : Boolean {
+    suspend fun doesUserWithEmailExist(email: String): Boolean {
         return repository.getUserByEmail(email) != null
     }
+
     suspend fun doesPasswordMatchForUser(request: LoginRequest) =
-         repository.doesPasswordForUserMatch(
+        repository.doesPasswordForUserMatch(
             enteredPassword = request.password,
             email = request.email
         )
 
-    suspend fun  doesEmailBelongToUserId(email: String, userId: String)  = repository.doesEmailBelongToUserId(email,userId)
+    suspend fun doesEmailBelongToUserId(email: String, userId: String) =
+        repository.doesEmailBelongToUserId(email, userId)
 
     suspend fun createUser(request: CreateAccountRequest) {
         repository.createUser(
@@ -36,11 +37,11 @@ class UserService(
         )
     }
 
-    suspend fun validateCreateAccountRequest(request : CreateAccountRequest) : ValidationEvent {
-      if ( request.email.isBlank() || request.password.isBlank() || request.username.isBlank()) {
-          return ValidationEvent.ErrorFieldEmpty
-      }
-        return  ValidationEvent.Success
+    suspend fun validateCreateAccountRequest(request: CreateAccountRequest): ValidationEvent {
+        if (request.email.isBlank() || request.password.isBlank() || request.username.isBlank()) {
+            return ValidationEvent.ErrorFieldEmpty
+        }
+        return ValidationEvent.Success
     }
 
     sealed class ValidationEvent {

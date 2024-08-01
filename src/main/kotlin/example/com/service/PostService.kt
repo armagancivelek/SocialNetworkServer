@@ -5,8 +5,8 @@ import example.com.data.repository.post.PostRepository
 import example.com.data.request.CreatePostRequest
 import example.com.util.Constants.DEFAULT_POST_PAGE_SIZE
 
-class PostService(
-   private val  repository: PostRepository
+ class PostService(
+   internal val  repository: PostRepository
 ) {
     suspend fun createPostIfUserExist(request : CreatePostRequest) = repository.createPostIfUserExist(
         Post(
@@ -24,5 +24,8 @@ class PostService(
     ) : List<Post> {
        return  repository.getPostByFollows(userId,page,pageSize)
     }
+
+    suspend fun getPost(postId: String) : Post?  = repository.getPost(postId)
+    suspend fun deletePost(postId: String)   = repository.deletePost(postId)
 
 }
