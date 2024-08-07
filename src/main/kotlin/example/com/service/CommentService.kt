@@ -9,9 +9,9 @@ import example.com.util.Constants
 class CommentService(
     private val repository: CommentRepository
 ) {
-    suspend fun  createComment(createCommentRequest: CreateCommentRequest) : ValidationEvents {
+    suspend fun  createComment(createCommentRequest: CreateCommentRequest,userId :String) : ValidationEvents {
         createCommentRequest.apply {
-            if (comment.isBlank() || userId.isBlank() || postId.isBlank()) {
+            if (comment.isBlank() ||  postId.isBlank()) {
                 return ValidationEvents.FieldEmpty
             }
             if (comment.length > Constants.MAX_COMMENT_LENGTH) {
@@ -21,7 +21,7 @@ class CommentService(
         repository.createComment(
             Comment(
                 comment = createCommentRequest.comment,
-                userId = createCommentRequest.userId,
+                userId = userId,
                 postId = createCommentRequest.postId,
                 timestamp = System.currentTimeMillis()
             )
@@ -36,6 +36,8 @@ class CommentService(
     suspend fun getCommentsForPost(postId:String) :List<Comment> {
         return repository.getCommentForPost(postId)
     }
+
+    suspend fun  getCommentById(commentId:String) = repository.getComment(commentId)
     sealed class  ValidationEvents {
         object  FieldEmpty : ValidationEvents()
         object Success : ValidationEvents()

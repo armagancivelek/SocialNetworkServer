@@ -12,3 +12,12 @@ interface UserRepository {
 
     suspend fun doesEmailBelongToUserId(email : String, userId: String) : Boolean
 }
+
+fun main() {
+
+
+    "asa".let {
+        println(it)
+
+    }
+}

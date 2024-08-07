@@ -33,15 +33,15 @@ fun Application.configureRouting() {
         // post routes
         createPostRoutes(postService,userService)
         getPostsForFollows(postService,userService)
-        deletePost(postService,userService,likeService)
+        deletePost(postService,likeService)
 
         // like routes
-        likeParent(likeService,userService)
-        unlikeParent(likeService,userService)
+        likeParent(likeService)
+        unlikeParent(likeService)
 
         // Comment routes
-        createComment(commentService,userService)
-        deleteComment(commentService,userService,likeService)
+        createComment(commentService)
+        deleteComment(commentService,likeService)
         getCommentsForPost(commentService)
 
     }

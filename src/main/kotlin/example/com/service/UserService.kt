@@ -1,9 +1,9 @@
 package example.com.service
 
 import example.com.data.models.User
+import example.com.data.repository.user.UserRepository
 import example.com.data.request.CreateAccountRequest
 import example.com.data.request.LoginRequest
-import example.com.data.repository.user.UserRepository
 
 class UserService(
     private val repository: UserRepository
@@ -20,6 +20,14 @@ class UserService(
 
     suspend fun doesEmailBelongToUserId(email: String, userId: String) =
         repository.doesEmailBelongToUserId(email, userId)
+
+    suspend fun  getUserByEmail(email : String) : User? {
+        return repository.getUserByEmail(email)
+    }
+
+    fun isValidPassword(enteredPassword : String, actualPassword : String) : Boolean {
+        return enteredPassword == actualPassword
+    }
 
     suspend fun createUser(request: CreateAccountRequest) {
         repository.createUser(

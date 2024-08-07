@@ -38,7 +38,6 @@ fun Route.createUserRoute(
                     )
                 )
             }
-
             UserService.ValidationEvent.Success -> {
                 userService.createUser(request)
                 call.respond(

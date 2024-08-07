@@ -1,8 +1,6 @@
 package example.com.service
 
-import example.com.data.models.Like
 import example.com.data.repository.likes.LikesRepository
-import org.litote.kmongo.eq
 
 class LikeService (
     private val repository: LikesRepository

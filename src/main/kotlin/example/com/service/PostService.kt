@@ -8,10 +8,10 @@ import example.com.util.Constants.DEFAULT_POST_PAGE_SIZE
  class PostService(
    internal val  repository: PostRepository
 ) {
-    suspend fun createPostIfUserExist(request : CreatePostRequest) = repository.createPostIfUserExist(
+    suspend fun createPostIfUserExist(request : CreatePostRequest,userId: String) = repository.createPostIfUserExist(
         Post(
             imageUrl = "",
-            userId = request.userId,
+            userId = userId,
             timestamp = System.currentTimeMillis(),
             description = request.description
         )
