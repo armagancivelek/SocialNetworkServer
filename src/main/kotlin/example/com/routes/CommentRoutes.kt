@@ -4,6 +4,7 @@ import example.com.data.request.CreateCommentRequest
 import example.com.data.request.DeleteCommentRequest
 import example.com.data.request.FollowUpdateRequest
 import example.com.data.responses.BasicApiResponse
+import example.com.service.ActivityService
 import example.com.service.CommentService
 import example.com.service.LikeService
 import example.com.service.UserService
@@ -17,7 +18,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.createComment(
-    commentService: CommentService
+    commentService: CommentService,
+    activityService: ActivityService
 ) {
     authenticate {
         post("/api/comment/create") {
@@ -26,7 +28,9 @@ fun Route.createComment(
                 return@post
             }
 
-            when (commentService.createComment(request,call.userId)){
+            val userId = call.userId
+
+            when (commentService.createComment(request,userId)){
                 CommentService.ValidationEvents.ErrorCommentTooLong -> {
                     call.respond(
                         HttpStatusCode.OK,
@@ -48,6 +52,11 @@ fun Route.createComment(
                     )
                 }
                 CommentService.ValidationEvents.Success -> {
+                    activityService.addCommentActivity(
+                        byUserId = userId,
+                        postId = request.postId,
+
+                    )
                     call.respond(
                         HttpStatusCode.OK,
                         BasicApiResponse(

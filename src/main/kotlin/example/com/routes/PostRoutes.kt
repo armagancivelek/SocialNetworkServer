@@ -3,6 +3,7 @@ package example.com.routes
 import example.com.data.request.CreatePostRequest
 import example.com.data.request.DeletePostRequest
 import example.com.data.responses.BasicApiResponse
+import example.com.service.CommentService
 import example.com.service.LikeService
 import example.com.service.PostService
 import example.com.service.UserService
@@ -69,7 +70,8 @@ fun Route.getPostsForFollows(
 
 fun Route.deletePost(
     postService: PostService,
-    likeService: LikeService
+    likeService: LikeService,
+    commentService : CommentService
 ) {
     authenticate {
         delete("/api/post/delete") {
@@ -88,7 +90,7 @@ fun Route.deletePost(
             if (post.userId == call.userId) {
                 postService.deletePost(request.postId)
                 likeService.deleteLikesForParent(request.postId)
-                // TODO: Delete comments from post
+                commentService.deleteCommentsForPostId(request.postId)
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respond(HttpStatusCode.Unauthorized)

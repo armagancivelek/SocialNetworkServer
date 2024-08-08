@@ -6,7 +6,8 @@ interface CommentRepository {
 
     suspend fun createComment(comment: Comment)
     suspend fun deleteComment(commentId: String) : Boolean
-    suspend fun getCommentForPost(postId: String) : List<Comment>
+    suspend fun getCommentsForPost(postId: String) : List<Comment>
+    suspend fun deleteCommentsFromPost(postId: String) :Boolean
     suspend fun getComment(commentId: String) : Comment?
 
 

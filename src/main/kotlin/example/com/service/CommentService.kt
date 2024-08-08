@@ -9,9 +9,9 @@ import example.com.util.Constants
 class CommentService(
     private val repository: CommentRepository
 ) {
-    suspend fun  createComment(createCommentRequest: CreateCommentRequest,userId :String) : ValidationEvents {
+    suspend fun createComment(createCommentRequest: CreateCommentRequest, userId: String): ValidationEvents {
         createCommentRequest.apply {
-            if (comment.isBlank() ||  postId.isBlank()) {
+            if (comment.isBlank() || postId.isBlank()) {
                 return ValidationEvents.FieldEmpty
             }
             if (comment.length > Constants.MAX_COMMENT_LENGTH) {
@@ -29,18 +29,22 @@ class CommentService(
         return ValidationEvents.Success
     }
 
-    suspend fun deleteComment(commentId : String) : Boolean{
-       return  repository.deleteComment(commentId)
+    suspend fun deleteComment(commentId: String): Boolean {
+        return repository.deleteComment(commentId)
     }
 
-    suspend fun getCommentsForPost(postId:String) :List<Comment> {
-        return repository.getCommentForPost(postId)
+    suspend fun getCommentsForPost(postId: String): List<Comment> {
+        return repository.getCommentsForPost(postId)
     }
 
-    suspend fun  getCommentById(commentId:String) = repository.getComment(commentId)
-    sealed class  ValidationEvents {
-        object  FieldEmpty : ValidationEvents()
-        object Success : ValidationEvents()
-        object ErrorCommentTooLong : ValidationEvents()
+    suspend fun deleteCommentsForPostId(postId: String) {
+        repository.deleteCommentsFromPost(postId)
+    }
+
+    suspend fun getCommentById(commentId: String) = repository.getComment(commentId)
+    sealed class ValidationEvents {
+        data object FieldEmpty : ValidationEvents()
+        data object Success : ValidationEvents()
+        data object ErrorCommentTooLong : ValidationEvents()
     }
 }

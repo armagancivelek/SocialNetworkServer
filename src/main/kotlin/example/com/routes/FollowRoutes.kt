@@ -1,7 +1,10 @@
 package example.com.routes
 
+import example.com.data.models.Activity
 import example.com.data.request.FollowUpdateRequest
 import example.com.data.responses.BasicApiResponse
+import example.com.data.util.ActivityType
+import example.com.service.ActivityService
 import example.com.service.FollowService
 import example.com.util.ApiResponseMessages.USER_NOT_FOUND
 import io.ktor.http.*
@@ -12,7 +15,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.followUser(
-    followService: FollowService
+    followService: FollowService,
+    activityService: ActivityService
 ) {
     authenticate {
         post("/api/following/follow") {
@@ -20,7 +24,17 @@ fun Route.followUser(
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
-            if (followService.followUserIfExist(request,call.userId)) {
+            val didUserExist = followService.followUserIfExist(request,call.userId)
+            if (didUserExist) {
+                activityService.createActivity(
+                    Activity(
+                        timestamp = System.currentTimeMillis(),
+                        byUserId = call.userId,
+                        toUserId = request.followedUserId,
+                        type = ActivityType.FollowedUser.type,
+                        parentId = ""
+                    )
+                )
                 call.respond(
                     HttpStatusCode.OK,
                     BasicApiResponse(

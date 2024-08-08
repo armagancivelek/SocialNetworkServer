@@ -18,9 +18,16 @@ class CommentRepositoryImp (
          return comments.deleteOneById(commentId).deletedCount > 0
     }
 
-    override suspend fun getCommentForPost(postId: String): List<Comment> {
+    override suspend fun getCommentsForPost(postId: String): List<Comment> {
          return comments.find(Comment::postId eq postId).toList()
     }
+
+    override suspend fun deleteCommentsFromPost(postId: String): Boolean {
+         return comments.deleteMany(
+            Comment::postId eq postId
+        ).wasAcknowledged()
+    }
+
 
     override suspend fun getComment(commentId: String): Comment? {
          return comments.findOneById(commentId)

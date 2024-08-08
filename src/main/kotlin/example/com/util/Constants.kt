@@ -1,6 +1,7 @@
 package example.com.util
 
 object Constants {
+    const val DEFAULT_PAGE_SIZE = 15
     const val DATABASE_NAME = "social_network_twitch"
 
     const val DEFAULT_POST_PAGE_SIZE = 15
