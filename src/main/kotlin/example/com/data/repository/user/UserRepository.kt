@@ -8,16 +8,10 @@ interface UserRepository {
     suspend fun getByUserId(id : String) : User?
     suspend fun getUserByEmail(email : String) : User?
 
+    suspend fun searchForUsers(query: String): List<User>
+
     suspend fun doesPasswordForUserMatch(email: String, enteredPassword: String): Boolean
 
     suspend fun doesEmailBelongToUserId(email : String, userId: String) : Boolean
 }
 
-fun main() {
-
-
-    "asa".let {
-        println(it)
-
-    }
-}

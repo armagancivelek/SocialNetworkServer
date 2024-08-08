@@ -54,7 +54,7 @@ val mainModule = module {
 
 
     single {
-        UserService(get())
+        UserService(get(),get())
     }
 
     single {

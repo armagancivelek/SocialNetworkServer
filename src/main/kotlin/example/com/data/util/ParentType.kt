@@ -1,9 +1,9 @@
 package example.com.data.util
 
 sealed class ParentType(val type: Int) {
-    object Post : ParentType(0)
-    object Comment : ParentType(1)
-    object None : ParentType(2)
+    data object Post : ParentType(0)
+    data object Comment : ParentType(1)
+    data object None : ParentType(2)
 
     companion object {
         fun fromType(type: Int): ParentType {

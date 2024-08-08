@@ -2,10 +2,13 @@ package example.com.routes
 
 import example.com.data.request.CreateAccountRequest
 import example.com.data.responses.BasicApiResponse
+import example.com.data.responses.UserResponseItem
 import example.com.service.UserService
 import example.com.util.ApiResponseMessages
+import example.com.util.QueryParams
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -46,6 +49,25 @@ fun Route.createUserRoute(
                     )
                 )
             }
+        }
+    }
+}
+fun Route.searchUser(userService: UserService) {
+    authenticate {
+        get("/api/user/search") {
+            val query = call.parameters[QueryParams.PARAM_QUERY]
+            if (query.isNullOrBlank()) {
+                call.respond(
+                    HttpStatusCode.OK,
+                    listOf<UserResponseItem>()
+                )
+                return@get
+            }
+            val searchResults = userService.searchForUsers(query, call.userId)
+            call.respond(
+                HttpStatusCode.OK,
+                searchResults
+            )
         }
     }
 }
