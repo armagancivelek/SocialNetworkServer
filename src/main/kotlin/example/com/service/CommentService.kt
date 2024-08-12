@@ -2,49 +2,56 @@ package example.com.service
 
 import example.com.data.models.Comment
 import example.com.data.repository.comment.CommentRepository
+import example.com.data.repository.user.UserRepository
 import example.com.data.request.CreateCommentRequest
 import example.com.util.Constants
 
 
 class CommentService(
-    private val repository: CommentRepository
+    private val commentRepository: CommentRepository,
+    private val userRepository: UserRepository
 ) {
-    suspend fun createComment(createCommentRequest: CreateCommentRequest, userId: String): ValidationEvents {
+    suspend fun createComment(createCommentRequest: CreateCommentRequest, userId: String): ValidationEvent {
         createCommentRequest.apply {
-            if (comment.isBlank() || postId.isBlank()) {
-                return ValidationEvents.FieldEmpty
+            if(comment.isBlank() || postId.isBlank()) {
+                return ValidationEvent.ErrorFieldEmpty
             }
-            if (comment.length > Constants.MAX_COMMENT_LENGTH) {
-                return ValidationEvents.ErrorCommentTooLong
+            if(comment.length > Constants.MAX_COMMENT_LENGTH) {
+                return ValidationEvent.ErrorCommentTooLong
             }
         }
-        repository.createComment(
+        val user = userRepository.getUserById(userId) ?: return ValidationEvent.UserNotFound
+        commentRepository.createComment(
             Comment(
+                username = user.username,
+                profileImageUrl = user.profileImageUrl,
+                likeCount = 0,
                 comment = createCommentRequest.comment,
                 userId = userId,
                 postId = createCommentRequest.postId,
                 timestamp = System.currentTimeMillis()
             )
         )
-        return ValidationEvents.Success
+        return ValidationEvent.Success
     }
 
     suspend fun deleteComment(commentId: String): Boolean {
-        return repository.deleteComment(commentId)
+        return commentRepository.deleteComment(commentId)
     }
 
     suspend fun getCommentsForPost(postId: String): List<Comment> {
-        return repository.getCommentsForPost(postId)
+        return commentRepository.getCommentsForPost(postId)
     }
 
     suspend fun deleteCommentsForPostId(postId: String) {
-        repository.deleteCommentsFromPost(postId)
+        commentRepository.deleteCommentsFromPost(postId)
     }
 
-    suspend fun getCommentById(commentId: String) = repository.getComment(commentId)
-    sealed class ValidationEvents {
-        data object FieldEmpty : ValidationEvents()
-        data object Success : ValidationEvents()
-        data object ErrorCommentTooLong : ValidationEvents()
+    suspend fun getCommentById(commentId: String) = commentRepository.getComment(commentId)
+    sealed class ValidationEvent {
+        data object ErrorFieldEmpty : ValidationEvent()
+        data object ErrorCommentTooLong : ValidationEvent()
+        data object UserNotFound: ValidationEvent()
+        data object Success : ValidationEvent()
     }
 }

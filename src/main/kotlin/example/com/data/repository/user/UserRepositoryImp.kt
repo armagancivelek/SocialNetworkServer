@@ -1,8 +1,10 @@
 package example.com.data.repository.user
 
 import example.com.data.models.User
+import example.com.data.request.UpdateProfileRequest
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
+import org.litote.kmongo.`in`
 import org.litote.kmongo.or
 import org.litote.kmongo.regex
 
@@ -24,6 +26,38 @@ class UserRepositoryImp(
         return users.findOne(User::email eq email)
     }
 
+    override suspend fun updateUser(
+        userId: String,
+        profileImageUrl: String?,
+        bannerUrl: String?,
+        updateProfileRequest: UpdateProfileRequest
+    ): Boolean {
+        val user = getUserById(userId) ?: return false
+        return users.updateOneById(
+            id = userId,
+            update = User(
+                email = user.email,
+                username = updateProfileRequest.username,
+                password = user.password,
+                profileImageUrl = profileImageUrl ?: user.profileImageUrl,
+                bannerUrl = bannerUrl ?: user.bannerUrl,
+                bio = updateProfileRequest.bio,
+                gitHubUrl = updateProfileRequest.gitHubUrl,
+                instagramUrl = updateProfileRequest.instagramUrl,
+                linkedInUrl = updateProfileRequest.linkedInUrl,
+                skills = updateProfileRequest.skills,
+                followerCount = user.followerCount,
+                followingCount = user.followingCount,
+                postCount = user.postCount,
+                id = user.id
+            )
+        ).wasAcknowledged()
+    }
+
+    override suspend fun getUserById(id: String): User? {
+        return users.findOneById(id)
+    }
+
     override suspend fun doesPasswordForUserMatch(
         email: String,
         enteredPassword: String
@@ -43,5 +77,7 @@ class UserRepositoryImp(
     }
 
     override suspend fun doesEmailBelongToUserId(email: String, userId: String) = users.findOneById(userId)?.email == email
-
+    override suspend fun getUsers(userIds: List<String>): List<User> {
+        return users.find(User::id `in` userIds).toList()
+    }
 }

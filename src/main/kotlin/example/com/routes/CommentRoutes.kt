@@ -27,49 +27,51 @@ fun Route.createComment(
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
-
             val userId = call.userId
-
-            when (commentService.createComment(request,userId)){
-                CommentService.ValidationEvents.ErrorCommentTooLong -> {
+            when (commentService.createComment(request, userId)) {
+                is CommentService.ValidationEvent.ErrorFieldEmpty -> {
                     call.respond(
                         HttpStatusCode.OK,
-                        BasicApiResponse(
-                            successful = false,
-                            message = ApiResponseMessages.COMMENT_TOO_LONG
-
-                        )
-                    )
-                }
-                CommentService.ValidationEvents.FieldEmpty -> {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        BasicApiResponse(
+                        BasicApiResponse<Unit>(
                             successful = false,
                             message = ApiResponseMessages.FIELDS_BLANK
-
                         )
                     )
                 }
-                CommentService.ValidationEvents.Success -> {
+                is CommentService.ValidationEvent.ErrorCommentTooLong -> {
+                    call.respond(
+                        HttpStatusCode.OK,
+                        BasicApiResponse<Unit>(
+                            successful = false,
+                            message = ApiResponseMessages.COMMENT_TOO_LONG
+                        )
+                    )
+                }
+                is CommentService.ValidationEvent.Success -> {
                     activityService.addCommentActivity(
                         byUserId = userId,
                         postId = request.postId,
-
                     )
                     call.respond(
                         HttpStatusCode.OK,
-                        BasicApiResponse(
+                        BasicApiResponse<Unit>(
                             successful = true,
+                        )
+                    )
+                }
+                is CommentService.ValidationEvent.UserNotFound -> {
+                    call.respond(
+                        HttpStatusCode.OK,
+                        BasicApiResponse<Unit>(
+                            successful = false,
+                            message = "User not found"
                         )
                     )
                 }
             }
         }
     }
-
 }
-
 fun Route.getCommentsForPost(
     commentService: CommentService,
 ) {
@@ -108,14 +110,14 @@ fun Route.deleteComment(
                 likeService.deleteLikesForParent(request.commentId)
                 call.respond(
                     HttpStatusCode.OK,
-                    BasicApiResponse(
+                    BasicApiResponse<Unit>(
                         successful = true
                     )
                 )
             }else {
                 call.respond(
                     HttpStatusCode.NotFound,
-                    BasicApiResponse(
+                    BasicApiResponse<Unit>(
                         successful = false
                     )
                 )

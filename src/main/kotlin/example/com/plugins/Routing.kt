@@ -27,19 +27,23 @@ fun Application.configureRouting() {
             jwtAudience = jwtAudience
         )
         searchUser(userService)
+        getUserProfile(userService)
+        getPostsForProfile(postService)
+        updateUserProfile(userService)
 
         // Following
         followUser(followService, activityService)
         unfollowUser(followService)
 
         // post routes
-        createPostRoutes(postService,userService)
+        createPostRoutes(postService)
         getPostsForFollows(postService,userService)
         deletePost(postService,likeService,commentService)
 
         // like routes
         likeParent(likeService,activityService)
         unlikeParent(likeService)
+        getLikesForParent(likeService)
 
         // Comment routes
         createComment(commentService,activityService)

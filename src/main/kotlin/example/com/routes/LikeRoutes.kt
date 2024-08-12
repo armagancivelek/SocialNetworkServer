@@ -7,6 +7,7 @@ import example.com.data.util.ParentType
 import example.com.service.ActivityService
 import example.com.service.LikeService
 import example.com.util.ApiResponseMessages
+import example.com.util.QueryParams
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -25,7 +26,7 @@ fun Route.likeParent(
                 return@post
             }
             val userId = call.userId
-            val likeSuccessful = likeService.likeParent(userId,request.parentId)
+            val likeSuccessful = likeService.likeParent(userId, request.parentId, request.parentType)
             if(likeSuccessful) {
                 activityService.addLikeActivity(
                     byUserId = userId,
@@ -34,14 +35,14 @@ fun Route.likeParent(
                 )
                 call.respond(
                     HttpStatusCode.OK,
-                    BasicApiResponse(
+                    BasicApiResponse<Unit>(
                         successful = true
                     )
                 )
             } else {
                 call.respond(
                     HttpStatusCode.OK,
-                    BasicApiResponse(
+                    BasicApiResponse<Unit>(
                         successful = false,
                         message = ApiResponseMessages.USER_NOT_FOUND
                     )
@@ -58,22 +59,26 @@ fun Route.unlikeParent(
 ) {
     authenticate {
         delete("/api/unlike") {
-            val request = call.receiveNullable<LikeUpdateRequest>() ?: kotlin.run {
+            val parentId = call.parameters[QueryParams.PARAM_PARENT_ID] ?: kotlin.run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete
             }
-            val unlikeSuccessful = likeService.likeParent(call.userId,request.parentId)
+            val parentType = call.parameters[QueryParams.PARAM_PARENT_TYPE]?.toIntOrNull() ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@delete
+            }
+            val unlikeSuccessful = likeService.unlikeParent(call.userId, parentId, parentType)
             if(unlikeSuccessful) {
                 call.respond(
                     HttpStatusCode.OK,
-                    BasicApiResponse(
+                    BasicApiResponse<Unit>(
                         successful = true
                     )
                 )
             } else {
                 call.respond(
                     HttpStatusCode.OK,
-                    BasicApiResponse(
+                    BasicApiResponse<Unit>(
                         successful = false,
                         message = ApiResponseMessages.USER_NOT_FOUND
                     )
@@ -81,6 +86,25 @@ fun Route.unlikeParent(
 
             }
 
+        }
+    }
+}
+
+fun Route.getLikesForParent(likeService: LikeService) {
+    authenticate {
+        get("/api/like/parent") {
+            val parentId = call.parameters[QueryParams.PARAM_PARENT_ID] ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@get
+            }
+            val usersWhoLikedParent = likeService.getUsersWhoLikedParent(
+                parentId = parentId,
+                call.userId
+            )
+            call.respond(
+                HttpStatusCode.OK,
+                usersWhoLikedParent
+            )
         }
     }
 }
