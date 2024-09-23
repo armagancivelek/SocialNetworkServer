@@ -41,9 +41,11 @@ fun Route.createPostRoutes(
                             )
                         }
                     }
+
                     is PartData.FileItem -> {
                         fileName = partData.save(Constants.POST_PICTURE_PATH)
                     }
+
                     is PartData.BinaryItem -> Unit
                     is PartData.BinaryChannelItem -> Unit
                 }
@@ -78,7 +80,6 @@ fun Route.createPostRoutes(
 
 fun Route.getPostsForFollows(
     postService: PostService,
-    userService: UserService
 ) {
     authenticate {
         get("/api/post/get") {
@@ -123,7 +124,7 @@ fun Route.getPostsForProfile(
 fun Route.deletePost(
     postService: PostService,
     likeService: LikeService,
-    commentService : CommentService
+    commentService: CommentService
 ) {
     authenticate {
         delete("/api/post/delete") {

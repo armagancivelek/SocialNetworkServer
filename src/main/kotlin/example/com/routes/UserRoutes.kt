@@ -1,7 +1,6 @@
 package example.com.routes
 
 import com.google.gson.Gson
-import example.com.data.request.CreateAccountRequest
 import example.com.data.request.UpdateProfileRequest
 import example.com.data.responses.BasicApiResponse
 import example.com.data.responses.UserResponseItem
@@ -13,7 +12,6 @@ import example.com.util.Constants.PROFILE_PICTURE_PATH
 import example.com.util.QueryParams
 import example.com.util.save
 import io.ktor.http.*
-import io.ktor.http.ContentDisposition.Companion.File
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -23,68 +21,24 @@ import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import java.io.File
 
-fun Route.createUserRoute(
-    userService: UserService
-) {
-
-    post("/api/user/create") {
-        val request = call.receiveNullable<CreateAccountRequest>() ?: kotlin.run {
-            call.respond(HttpStatusCode.BadRequest)
-            return@post
-        }
-        if (userService.doesUserWithEmailExist(request.email)) {
-            println("User exist")
-            call.respond(
-                BasicApiResponse<Unit>(
-                    false,
-                    message = ApiResponseMessages.USER_ALREADY_EXISTS
-                )
-            )
-            return@post
-        }
-        when (userService.validateCreateAccountRequest(request)) {
-            is UserService.ValidationEvent.ErrorFieldEmpty -> {
-                call.respond(
-                    BasicApiResponse<Unit>(
-                        false,
-                        message = ApiResponseMessages.FIELDS_BLANK
-                    )
-                )
-            }
-
-            UserService.ValidationEvent.Success -> {
-                userService.createUser(request)
-                call.respond(
-                    BasicApiResponse<Unit>(
-                        successful = true
-                    )
-                )
-            }
-
-            UserService.ValidationEvent.UserNotFound -> TODO()
-        }
-    }
-}
-
 fun Route.searchUser(userService: UserService) {
     authenticate {
         get("/api/user/search") {
             val query = call.parameters[QueryParams.PARAM_QUERY]
             if (query.isNullOrBlank()) {
                 call.respond(
-                    HttpStatusCode.OK,
-                    listOf<UserResponseItem>()
+                    HttpStatusCode.OK, listOf<UserResponseItem>()
                 )
                 return@get
             }
             val searchResults = userService.searchForUsers(query, call.userId)
             call.respond(
-                HttpStatusCode.OK,
-                searchResults
+                HttpStatusCode.OK, searchResults
             )
         }
     }
 }
+
 
 fun Route.getUserProfile(userService: UserService) {
     authenticate {
@@ -97,19 +51,15 @@ fun Route.getUserProfile(userService: UserService) {
             val profileResponse = userService.getUserProfile(userId, call.userId)
             if (profileResponse == null) {
                 call.respond(
-                    HttpStatusCode.OK,
-                    BasicApiResponse<Unit>(
-                        successful = false,
-                        message = ApiResponseMessages.USER_NOT_FOUND
+                    HttpStatusCode.OK, BasicApiResponse<Unit>(
+                        successful = false, message = ApiResponseMessages.USER_NOT_FOUND
                     )
                 )
                 return@get
             }
             call.respond(
-                HttpStatusCode.OK,
-                BasicApiResponse(
-                    successful = true,
-                    data = profileResponse
+                HttpStatusCode.OK, BasicApiResponse(
+                    successful = true, data = profileResponse
                 )
             )
         }
@@ -129,8 +79,7 @@ fun Route.updateUserProfile(userService: UserService) {
                     is PartData.FormItem -> {
                         if (partData.name == "update_profile_data") {
                             updateProfileRequest = gson.fromJson(
-                                partData.value,
-                                UpdateProfileRequest::class.java
+                                partData.value, UpdateProfileRequest::class.java
                             )
                         }
                     }
@@ -153,23 +102,19 @@ fun Route.updateUserProfile(userService: UserService) {
 
             updateProfileRequest?.let { request ->
                 val updateAcknowledged = userService.updateUser(
-                    userId = call.userId,
-                    profileImageUrl = if (profilePictureFileName == null) {
+                    userId = call.userId, profileImageUrl = if (profilePictureFileName == null) {
                         null
                     } else {
                         profilePictureUrl
-                    },
-                    bannerUrl = if (bannerImageFileName == null) {
+                    }, bannerUrl = if (bannerImageFileName == null) {
                         null
                     } else {
                         bannerImageUrl
-                    },
-                    updateProfileRequest = request
+                    }, updateProfileRequest = request
                 )
                 if (updateAcknowledged) {
                     call.respond(
-                        HttpStatusCode.OK,
-                        BasicApiResponse<Unit>(
+                        HttpStatusCode.OK, BasicApiResponse<Unit>(
                             successful = true
                         )
                     )

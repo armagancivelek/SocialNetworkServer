@@ -26,7 +26,7 @@ class UserService(
     suspend fun doesEmailBelongToUserId(email: String, userId: String) =
         userRepository.doesEmailBelongToUserId(email, userId)
 
-    suspend fun  getUserByEmail(email : String) : User? {
+    suspend fun getUserByEmail(email: String): User? {
         return userRepository.getUserByEmail(email)
     }
 
@@ -64,7 +64,7 @@ class UserService(
         )
     }
 
-    fun isValidPassword(enteredPassword : String, actualPassword : String) : Boolean {
+    fun isValidPassword(enteredPassword: String, actualPassword: String): Boolean {
         return enteredPassword == actualPassword
     }
 
@@ -99,7 +99,7 @@ class UserService(
         }.filter { it.userId != userId }
     }
 
-    suspend fun validateCreateAccountRequest(request: CreateAccountRequest): ValidationEvent {
+    fun validateCreateAccountRequest(request: CreateAccountRequest): ValidationEvent {
         if (request.email.isBlank() || request.password.isBlank() || request.username.isBlank()) {
             return ValidationEvent.ErrorFieldEmpty
         }

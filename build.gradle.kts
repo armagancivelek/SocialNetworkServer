@@ -68,6 +68,10 @@ dependencies {
     implementation("io.insert-koin:koin-ktor:$koin_ktor")
     // SLF4J Logger
     implementation("io.insert-koin:koin-logger-slf4j:$koin_ktor")
+    //Validation
+    implementation("io.ktor:ktor-server-request-validation:$ktor_version")
+    //Status pages
+    implementation("io.ktor:ktor-server-status-pages:$ktor_version")
 
 
 
